@@ -1,5 +1,5 @@
 ---
-const { toggleTheme } = Astro.props;
+const {} = Astro.props;
 ---
 
 <button
@@ -12,48 +12,48 @@ const { toggleTheme } = Astro.props;
 </button>
 
 <script is:inline>
-window.addEventListener('DOMContentLoaded', () => {
-  const circle = document.querySelector('#theme-toggle .circle');
-  let toggled = false; // Estado interno para alternar posiciones
+  window.addEventListener("DOMContentLoaded", () => {
+    const circle = document.querySelector("#theme-toggle .circle");
+    let toggled = false; // Estado interno para alternar posiciones
 
-  window.togglePosition = () => {
-    toggled = !toggled;
-    circle.style.transform = toggled ? 'translateX(18px)' : 'translateX(0px)';
-  };
-});
+    window.togglePosition = () => {
+      toggled = !toggled;
+      circle.style.transform = toggled ? "translateX(18px)" : "translateX(0px)";
+    };
+  });
 </script>
 
 <style>
-/* Tema claro: bola a la izquierda */
-[data-theme='light'] {
-  --toggle-position: 0px;
-}
+  /* Tema claro: bola a la izquierda */
+  [data-theme="light"] {
+    --toggle-position: 0px;
+  }
 
-/* Tema oscuro: bola a la derecha */
-[data-theme='dark'] {
-  --toggle-position: 18px;
-}
+  /* Tema oscuro: bola a la derecha */
+  [data-theme="dark"] {
+    --toggle-position: 18px;
+  }
 
-.circle {
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background-color: var(--bg-color);
-}
+  .circle {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: var(--bg-color);
+  }
 
-#theme-toggle {
-  width: 40px;
-  height: 20px;
-  border-radius: 999px;
-  display: flex;
-  align-items: center;
-  justify-content: flex-start;
-  padding: 2px;
-  cursor: pointer;
-}
+  #theme-toggle {
+    width: 40px;
+    height: 20px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 2px;
+    cursor: pointer;
+  }
 
-/* Ajuste del fondo según el tema */
-#theme-toggle {
-  background-color: var(--border-color);
-}
+  /* Ajuste del fondo según el tema */
+  #theme-toggle {
+    background-color: var(--border-color);
+  }
 </style>

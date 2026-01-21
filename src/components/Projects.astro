@@ -1,39 +1,43 @@
 ---
 import Section from "./section.astro";
-import { projects } from "../cv.json"
+import { projects } from "../cv.json";
 ---
 
 <Section title="Projects">
     <ul>
         {
-            projects.map (({ url, description, highlights, name, isActive }) => {
+            projects.map(({ url, description, name, isActive }) => {
                 return (
-                <li>
-                    <article>
-                        <header>
-                            <h3>
-                            <a href={url} title={`Ver el proyecto ${name}`}>
-                            {name}
-                            </a>
-                            {isActive && <span>&bull;</span>} 
-                            </h3>
-                            <div id="unique-paragraph" class="paragraph-style">
-                                {description}
-                            </div>
-                        </header>
-                    </article>
-                </li>
-                )
-            }
-        )
+                    <li>
+                        <article>
+                            <header>
+                                <h3>
+                                    <a
+                                        href={url}
+                                        title={`Ver el proyecto ${name}`}
+                                    >
+                                        {name}
+                                    </a>
+                                    {isActive && <span>&bull;</span>}
+                                </h3>
+                                <div
+                                    id="unique-paragraph"
+                                    class="paragraph-style"
+                                >
+                                    {description}
+                                </div>
+                            </header>
+                        </article>
+                    </li>
+                );
+            })
         }
-    </li>
+    </ul>
 </Section>
 
 <style>
-
-    ul{
-        display:grid;
+    ul {
+        display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 1rem;
         padding: 0;
@@ -52,19 +56,19 @@ import { projects } from "../cv.json"
     }
 
     .paragraph-style {
-        color: #888;		
+        color: #888;
         font-size: 0.75rem;
-		line-height: 1.5;
-		margin: 0;
-		text-wrap: pretty;
+        line-height: 1.5;
+        margin: 0;
+        text-wrap: pretty;
         font-family: monospace;
-  }
-
-    article header{
-        flex:1;
     }
 
-    article h3{
+    article header {
+        flex: 1;
+    }
+
+    article h3 {
         margin-bottom: 4px;
     }
 
@@ -73,19 +77,18 @@ import { projects } from "../cv.json"
         transition: color 0.2s;
     }
 
-    article a:hover{
+    article a:hover {
         text-decoration: underline;
     }
 
-    article p{
+    article p {
         font-size: 0.75rem;
         line-height: 1.2rem;
         margin-bottom: 4px;
     }
 
-    article h3 span{
+    article h3 span {
         color: rgb(0, 255, 64);
-        padding-left: 0.2rem;;
+        padding-left: 0.2rem;
     }
-
 </style>

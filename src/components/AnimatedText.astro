@@ -32,9 +32,9 @@ const { text = "" } = Astro.props;
 
 <script is:inline>
   // Prevent multiple initializations
-  if (typeof window !== 'undefined' && !window.__asciiShiftInitialized) {
+  if (typeof window !== "undefined" && !window.__asciiShiftInitialized) {
     window.__asciiShiftInitialized = true;
-    
+
     // Constants for wave animation behavior
     const WAVE_THRESH = 3;
     const CHAR_MULT = 3;
@@ -61,7 +61,7 @@ const { text = "" } = Astro.props;
         chars: '.,·-─~+:;=*π""┐┌┘┴┬╗╔╝╚╬╠╣╩╦║░▒▓█▄▀▌▐■!?&#$@0123456789*',
         preserveSpaces: true,
         spread: 0.3,
-        ...opts
+        ...opts,
       };
 
       /**
@@ -70,10 +70,12 @@ const { text = "" } = Astro.props;
        */
       const updateCursorPos = (e) => {
         const rect = el.getBoundingClientRect();
-        
+
         // Use caretRangeFromPoint for accurate multiline positioning
+        // @ts-ignore
         if (document.caretRangeFromPoint) {
           try {
+            // @ts-ignore
             const range = document.caretRangeFromPoint(e.clientX, e.clientY);
             if (range) {
               // Check if range is within our element or its children
@@ -81,7 +83,7 @@ const { text = "" } = Astro.props;
               while (container && container !== el) {
                 container = container.parentNode;
               }
-              
+
               if (container === el || el.contains(range.startContainer)) {
                 // Calculate character position from start of element
                 const preRange = document.createRange();
@@ -96,7 +98,7 @@ const { text = "" } = Astro.props;
             // Fallback if caretRangeFromPoint fails
           }
         }
-        
+
         // Fallback: use width-based calculation (less accurate for multiline)
         const x = e.clientX - rect.left;
         const len = origTxt.length;
@@ -111,7 +113,7 @@ const { text = "" } = Astro.props;
         waves.push({
           startPos: cursorPos,
           startTime: Date.now(),
-          id: Math.random()
+          id: Math.random(),
         });
         if (!isAnim) start();
       };
@@ -135,13 +137,13 @@ const { text = "" } = Astro.props;
           const age = t - w.startTime;
           const prog = Math.min(age / cfg.dur, 1);
           const dist = Math.abs(charIdx - w.startPos);
-          
+
           // Calculate max distance from wave start to furthest point in text
           // This ensures the wave can reach both ends of the text
           const distToStart = w.startPos;
           const distToEnd = origChars.length - w.startPos - 1;
           const maxDist = Math.max(distToStart, distToEnd);
-          
+
           // Calculate radius: wave expands from start position
           // Use maxDist to ensure full coverage, with buffer for smooth animation
           const rad = (prog * (maxDist + WAVE_BUF)) / cfg.spread;
@@ -150,11 +152,13 @@ const { text = "" } = Astro.props;
           if (dist <= rad) {
             shouldAnim = true;
             const intens = Math.max(0, rad - dist);
-            
+
             // Chars in the wave zone shift through character sequence
             // Only animate characters close to the wave front for performance
             if (intens <= WAVE_THRESH && intens > 0) {
-              const charIdx = (dist * CHAR_MULT + Math.floor(age / ANIM_STEP)) % cfg.chars.length;
+              const charIdx =
+                (dist * CHAR_MULT + Math.floor(age / ANIM_STEP)) %
+                cfg.chars.length;
               resultChar = cfg.chars[charIdx];
             }
           }
@@ -181,7 +185,7 @@ const { text = "" } = Astro.props;
       const stop = () => {
         el.textContent = origTxt;
         el.classList.remove("as");
-        
+
         // Reset dimensions to allow natural text flow
         if (origW !== null) {
           el.style.width = "";
@@ -196,7 +200,7 @@ const { text = "" } = Astro.props;
        */
       const start = () => {
         if (isAnim) return;
-        
+
         // Preserve original dimensions to prevent layout shifts
         // For multiline text, we need to preserve both width and min-height
         if (origW === null) {
@@ -204,7 +208,7 @@ const { text = "" } = Astro.props;
           origW = rect.width;
           // Only set width if element has a defined width (not auto/inline)
           const computedStyle = window.getComputedStyle(el);
-          if (computedStyle.display !== 'inline' || rect.width > 0) {
+          if (computedStyle.display !== "inline" || rect.width > 0) {
             el.style.width = `${origW}px`;
           }
           // Preserve min-height for multiline text
@@ -218,10 +222,10 @@ const { text = "" } = Astro.props;
 
         const animate = () => {
           const t = Date.now();
-          
+
           // Clean up expired waves first
           cleanupWaves(t);
-          
+
           if (waves.length === 0) {
             stop();
             return;
@@ -262,9 +266,9 @@ const { text = "" } = Astro.props;
         const events = [
           ["mouseenter", handleEnter],
           ["mousemove", handleMove],
-          ["mouseleave", handleLeave]
+          ["mouseleave", handleLeave],
         ];
-        
+
         events.forEach(([evt, handler]) => el.addEventListener(evt, handler));
       };
 
@@ -277,7 +281,7 @@ const { text = "" } = Astro.props;
           cancelAnimationFrame(animId);
           animId = null;
         }
-        
+
         // Reset dimensions preservation
         if (origW !== null) {
           el.style.width = "";
@@ -302,7 +306,10 @@ const { text = "" } = Astro.props;
       const destroy = () => {
         resetToOrig();
         ["mouseenter", "mousemove", "mouseleave"].forEach((evt, i) =>
-          el.removeEventListener(evt, [handleEnter, handleMove, handleLeave][i])
+          el.removeEventListener(
+            evt,
+            [handleEnter, handleMove, handleLeave][i],
+          ),
         );
       };
 
@@ -317,18 +324,20 @@ const { text = "" } = Astro.props;
      * Initialize animation for all animated-text elements on the page
      */
     const initASCIIShift = () => {
-      const elements = document.querySelectorAll(".animated-text:not([data-ascii-initialized])");
+      const elements = document.querySelectorAll(
+        ".animated-text:not([data-ascii-initialized])",
+      );
       elements.forEach((el) => {
         if (!el.textContent.trim()) return;
-        el.setAttribute('data-ascii-initialized', 'true');
+        el.setAttribute("data-ascii-initialized", "true");
         // Adjust spread and duration based on text length for better coverage
         const textLength = el.textContent.length;
-        
+
         // Optimize parameters for different text lengths
         // Longer texts need slower spread (smaller value) and longer duration
         let spread, dur;
         if (textLength > 180) {
-          // Very long texts (like About summary ~200 chars): 
+          // Very long texts (like About summary ~200 chars):
           // Use slower spread to ensure smooth coverage of entire text
           spread = 0.25;
           dur = 2000; // Fixed duration for consistency
@@ -345,14 +354,14 @@ const { text = "" } = Astro.props;
           spread = 1;
           dur = 1000;
         }
-        
+
         createASCIIShift(el, { dur: dur, spread: spread });
       });
     };
 
     // Initialize when DOM is ready
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initASCIIShift);
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", initASCIIShift);
     } else {
       initASCIIShift();
     }

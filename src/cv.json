@@ -1,30 +1,33 @@
 {
-    "basics": {
-      "name": "Diego González",
-      "label": "Computing Technician and student of Systems Degree.",
-      "image": "https://avatars.githubusercontent.com/u/105770016?v=4",
-      "email": "diego.gonzaaleez.a@gmail.com",
-      "phone": "+54 9 376-4820986",
-      "url": "https://johndoe.com",
-      "location": {
-        "address": "Lavalle 1850",
-        "postalCode": "N3300",
-        "city": "Posadas",
-        "countryCode": "ARG",
-        "region": "Misiones"
-      },
-      "profiles": [      {
+  "basics": {
+    "name": "Diego González",
+    "label": "Computing Technician and student of Systems Degree.",
+    "image": "https://avatars.githubusercontent.com/u/105770016?v=4",
+    "email": "diego.gonzaaleez.a@gmail.com",
+    "phone": "+54 9 376-4820986",
+    "url": "https://johndoe.com",
+    "location": {
+      "address": "Lavalle 1850",
+      "postalCode": "N3300",
+      "city": "Posadas",
+      "countryCode": "ARG",
+      "region": "Misiones"
+    },
+    "profiles": [
+      {
         "network": "GitHub",
         "username": "Diego Paradiso",
         "url": "https://github.com/DiegoParadiso"
-      },{
+      },
+      {
         "network": "Linkedin",
         "username": "Diego González",
         "url": "https://www.linkedin.com/in/diego-gonzalez-513013226/"
       }
     ]
-    },
-    "work": [{
+  },
+  "work": [
+    {
       "name": "Escuela de Robótica de Misiones",
       "position": "Facilitador",
       "url": "https://company.com",
@@ -34,8 +37,10 @@
       "highlights": [
         "Started the company"
       ]
-    }],
-    "volunteer": [{
+    }
+  ],
+  "volunteer": [
+    {
       "organization": "Organization",
       "position": "Volunteer",
       "url": "https://organization.com/",
@@ -45,8 +50,10 @@
       "highlights": [
         "Awarded 'Volunteer of the Month'"
       ]
-    }],
-    "education": [{
+    }
+  ],
+  "education": [
+    {
       "institution": "UNaM - FCEQyN",
       "isActive": true,
       "url": "https://www.fceqyn.unam.edu.ar/",
@@ -63,83 +70,152 @@
       "endDate": "2022-12-12"
     }
   ],
-    
-    "awards": [{
+  "awards": [
+    {
       "title": "Award",
       "date": "2014-11-01",
       "awarder": "Company",
       "summary": "There is no spoon."
-    }],
-    "certificates": [{
+    }
+  ],
+  "certificates": [
+    {
       "name": "Certificate",
       "date": "2021-11-07",
       "issuer": "Company",
       "url": "https://certificate.com"
-    }],
-    "publications": [{
+    }
+  ],
+  "publications": [
+    {
       "name": "Publication",
       "publisher": "Company",
       "releaseDate": "2014-10-01",
       "url": "https://publication.com",
       "summary": "Description…"
-    }],
-"skills": [
-  { "name": "React" },
-  { "name": "TypeScript" },
-  { "name": "JavaScript (ES6+)" },
-  { "name": "Tailwind CSS" },
-  { "name": "Node.js" },
-  { "name": "Express.js" },
-  { "name": "C#" },
-  { "name": ".NET Framework" },
-  { "name": "ASP.NET Core" },
-  { "name": "Entity Framework" },
-  { "name": "PostgreSQL + MongoDB" },
-  { "name": "RESTful APIs" },
-  { "name": "JWT Authentication" },
-  { "name": "Git & GitHub" },
-  { "name": "Docker" },
-  { "name": "Postman" },
-  { "name": "Vite" },
-  { "name": "MongoDB / Neon" },
-  { "name": "CI/CD & Deployment" },
-  { "name": "SOLID Principles" },
-  { "name": "Clean Code" },
-  { "name": "Design Patterns" },
-  { "name": "MVC Architecture" },
-  { "name": "C" },
-  { "name": "Java" },
-  { "name": "Python" },
-  { "name": "Teamwork" },
-  { "name": "Communication" },
-  { "name": "Self-Learning" }
-],
-    "languages": [{
+    }
+  ],
+  "skills": [
+    {
+      "name": "React"
+    },
+    {
+      "name": "TypeScript"
+    },
+    {
+      "name": "JavaScript (ES6+)"
+    },
+    {
+      "name": "Tailwind CSS"
+    },
+    {
+      "name": "Node.js"
+    },
+    {
+      "name": "Express.js"
+    },
+    {
+      "name": "C#"
+    },
+    {
+      "name": ".NET Framework"
+    },
+    {
+      "name": "ASP.NET Core"
+    },
+    {
+      "name": "Entity Framework"
+    },
+    {
+      "name": "PostgreSQL + MongoDB"
+    },
+    {
+      "name": "RESTful APIs"
+    },
+    {
+      "name": "JWT Authentication"
+    },
+    {
+      "name": "Git & GitHub"
+    },
+    {
+      "name": "Docker"
+    },
+    {
+      "name": "Postman"
+    },
+    {
+      "name": "Vite"
+    },
+    {
+      "name": "MongoDB / Neon"
+    },
+    {
+      "name": "CI/CD & Deployment"
+    },
+    {
+      "name": "SOLID Principles"
+    },
+    {
+      "name": "Clean Code"
+    },
+    {
+      "name": "Design Patterns"
+    },
+    {
+      "name": "MVC Architecture"
+    },
+    {
+      "name": "C"
+    },
+    {
+      "name": "Java"
+    },
+    {
+      "name": "Python"
+    },
+    {
+      "name": "Teamwork"
+    },
+    {
+      "name": "Communication"
+    },
+    {
+      "name": "Self-Learning"
+    }
+  ],
+  "languages": [
+    {
       "language": "English",
       "fluency": "Native speaker"
-    }],
-    "interests": [{
+    }
+  ],
+  "interests": [
+    {
       "name": "Wildlife",
       "keywords": [
         "Ferrets",
         "Unicorns"
       ]
-    }],
-    "references": [{
+    }
+  ],
+  "references": [
+    {
       "name": "Jane Doe",
       "reference": "Reference…"
-    }],
-    
-    "projects": [ 
+    }
+  ],
+  "projects": [
     {
-      "name": "Recurnote",    
-      "isActive": true,  
+      "name": "Recurnote",
+      "isActive": true,
       "description": "Dynamic reminders website with drag-and-drop calendar, notes, tasks, and visual file management system.",
       "highlights": [
         "Minimal interface"
       ],
       "url": "https://recurnote.xyz"
-    },{
+    },
+    {
       "name": "OWENS System",
       "isActive": true,
       "startDate": "2026-01-02",
@@ -150,9 +226,9 @@
         "System",
         "Management"
       ],
-      
       "url": "https://github.com/DiegoParadiso/owens"
-    },{
+    },
+    {
       "name": "Structurize It",
       "isActive": true,
       "startDate": "2025-03-28",
@@ -163,8 +239,7 @@
         "Games",
         "Responsive design"
       ],
-      
       "url": "https://structurize-it.vercel.app"
     }
   ]
-  }
+}

@@ -1,33 +1,40 @@
 ---
-import Section from "./section.astro"
-import { work } from '../cv.json'
-import AnimatedText from "./AnimatedText.astro"
+import Section from "./section.astro";
+import { work } from "../cv.json";
+import AnimatedText from "./AnimatedText.astro";
 ---
+
 <Section title="Experience">
     <ul>
         {
-            work.map(({name, startDate, endDate, position, summary, highlights}) => {
-                const startYear = new Date(startDate).getFullYear()
-                const endYear = endDate != null ? new Date(endDate).getFullYear() : "present"
-                const years = `${startYear} - ${endYear}`
+            work.map(({ name, startDate, endDate, position, summary }) => {
+                const startYear = new Date(startDate).getFullYear();
+                const endYear =
+                    endDate != null
+                        ? new Date(endDate).getFullYear()
+                        : "present";
+                const years = `${startYear} - ${endYear}`;
                 return (
-                <li>
-                    <article>
-                        <header>
-                            <div>
-                            <h3>{name}</h3>
-                            <h4>{position}</h4>
-                            </div>
-                            <time>{years}</time>
-                        </header>
-                        <footer>
-                            <div id="unique-paragraph" class="paragraph-style">
-                                <AnimatedText text={summary} />
-                            </div>                           
-                        </footer>
-                    </article>
-                </li>
-                )
+                    <li>
+                        <article>
+                            <header>
+                                <div>
+                                    <h3>{name}</h3>
+                                    <h4>{position}</h4>
+                                </div>
+                                <time>{years}</time>
+                            </header>
+                            <footer>
+                                <div
+                                    id="unique-paragraph"
+                                    class="paragraph-style"
+                                >
+                                    <AnimatedText text={summary} />
+                                </div>
+                            </footer>
+                        </article>
+                    </li>
+                );
             })
         }
     </ul>
@@ -61,12 +68,12 @@ import AnimatedText from "./AnimatedText.astro"
     }
     .paragraph-style {
         color: #888;
-		font-size: 0.8rem;
-		line-height: 1.5;
-		margin: 0;
-		text-wrap: pretty;
+        font-size: 0.8rem;
+        line-height: 1.5;
+        margin: 0;
+        text-wrap: pretty;
         font-family: monospace;
-  }
+    }
     header {
         display: flex;
         justify-content: space-between;
