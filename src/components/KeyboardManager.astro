@@ -47,17 +47,50 @@ const profilesInfo = profiles.map(({network, url}) => {
 ---
 
 
-<footer class="no-print">
+<footer class="no-print footer-invisible" id="ninja-footer">
     Press <kbd>Ctrl</kbd> + <kbd>K</kbd> to open the command menu
 </footer>
 
-<ninja-keys
-    data-info={JSON.stringify(profilesInfo)}></ninja-keys>
+<div id="ninja-keys-container" class="ninja-invisible">
+    <ninja-keys data-info={JSON.stringify(profilesInfo)}></ninja-keys>
+</div>
 
 <script>
     import "ninja-keys"
 
     const ninja = document.querySelector("ninja-keys")
+    let commandEnabled = false;
+
+    function updateCommandMenuState() {
+        const container = document.getElementById('ninja-keys-container');
+        const footer = document.getElementById('ninja-footer');
+        if (container && ninja) {
+            if (window.scrollY > 0) {
+                commandEnabled = true;
+                container.classList.remove('ninja-invisible');
+                container.classList.add('ninja-visible');
+                ninja.removeAttribute('disabled');
+            } else {
+                commandEnabled = false;
+                container.classList.remove('ninja-visible');
+                container.classList.add('ninja-invisible');
+                ninja.setAttribute('disabled', 'true');
+            }
+        }
+        if (footer) {
+            if (window.scrollY > 0) {
+                footer.classList.remove('footer-invisible');
+                footer.classList.add('footer-visible');
+            } else {
+                footer.classList.remove('footer-visible');
+                footer.classList.add('footer-invisible');
+            }
+        }
+    }
+
+    window.addEventListener('scroll', updateCommandMenuState);
+    document.addEventListener('DOMContentLoaded', updateCommandMenuState);
+
     if (ninja != null){
         const info = ninja.getAttribute("data-info") ?? "[]"
         const parsedInfo = JSON.parse(info)
@@ -66,7 +99,7 @@ const profilesInfo = profiles.map(({network, url}) => {
             return {
                 ... item,
                 handler: () => {
-                    window.open(item.url, "_blank")
+                    if(commandEnabled) window.open(item.url, "_blank")
                 },
             }
         })
@@ -81,13 +114,43 @@ const profilesInfo = profiles.map(({network, url}) => {
 </svg>`,
             section: "Actions",
                 handler: () => {
-                    window.print()
+                    if(commandEnabled) window.print()
                 },
             },
             ...data,
         ]
     }
 
+    // Opcional: interceptar Ctrl+K globalmente
+    window.addEventListener('keydown', (event) => {
+        if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === 'k') {
+            if (!commandEnabled) {
+                event.preventDefault();
+            }
+        }
+    });
+
+    // Aplicar tema oscuro a ninja-keys según el tema del sitio
+    function updateNinjaKeysTheme() {
+        if (ninja) {
+            const theme = document.documentElement.getAttribute('data-theme');
+            if (theme === 'dark') {
+                ninja.classList.add('dark');
+            } else {
+                ninja.classList.remove('dark');
+            }
+        }
+    }
+
+    // Observar cambios en el atributo data-theme
+    const observer = new MutationObserver(updateNinjaKeysTheme);
+    observer.observe(document.documentElement, {
+        attributes: true,
+        attributeFilter: ['data-theme']
+    });
+
+    // Aplicar tema inicial
+    updateNinjaKeysTheme();
 </script>
 
 <style>
@@ -115,10 +178,35 @@ const profilesInfo = profiles.map(({network, url}) => {
         animation-range: entry 100% cover 10%;
     }
 
+    /* Footer border para dark mode */
+    :global([data-theme='dark']) footer {
+        border-top-color: #2a2a2a;
+    }
+
     kbd{
         background: var(--bg-color);
         border-radius: 4px;
         padding: 2px 4px;
+    }
+
+    /* Variables CSS personalizadas para ninja-keys en modo oscuro */
+    :global(ninja-keys.dark) {
+        --ninja-text-color: var(--text-color);
+        --ninja-secondary-background-color: var(--code-bg);
+        --ninja-modal-background: var(--card-bg);
+        --ninja-secondary-text-color: var(--text-color);
+        --ninja-border-color: var(--border-color);
+        --ninja-hover-background: var(--code-bg);
+    }
+
+    /* Variables CSS para ninja-keys en modo claro */
+    :global(ninja-keys:not(.dark)) {
+        --ninja-text-color: #1a1a1a;
+        --ninja-secondary-background-color: #f5f5f5;
+        --ninja-modal-background: #ffffff;
+        --ninja-secondary-text-color: #1a1a1a;
+        --ninja-border-color: #e0e0e0;
+        --ninja-hover-background: #f5f5f5;
     }
 
     @keyframes fadeIn {
@@ -136,4 +224,24 @@ const profilesInfo = profiles.map(({network, url}) => {
         }
     }
     
+    .ninja-visible {
+        opacity: 1;
+        pointer-events: auto;
+        transition: opacity 0.3s ease;
+    }
+    .ninja-invisible {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.3s ease;
+    }
+    .footer-visible {
+        opacity: 1;
+        pointer-events: auto;
+        transition: opacity 0.4s ease;
+    }
+    .footer-invisible {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.4s ease;
+    }
 </style>

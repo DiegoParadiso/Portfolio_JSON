@@ -1,6 +1,5 @@
 ---
 import Section from "./section.astro";
-import AnimatedText from "./AnimatedText.astro"
 import { projects } from "../cv.json"
 ---
 
@@ -19,7 +18,7 @@ import { projects } from "../cv.json"
                             {isActive && <span>&bull;</span>} 
                             </h3>
                             <div id="unique-paragraph" class="paragraph-style">
-                                <AnimatedText text={description} />
+                                {description}
                             </div>
                         </header>
                     </article>
@@ -49,12 +48,12 @@ import { projects } from "../cv.json"
         flex-direction: column;
         padding: 16px;
         height: 100%;
-        transition: background-color 0.3s, border-color 0.3s;
+        /* transition: background-color 0.3s, border-color 0.3s; */
     }
 
     .paragraph-style {
-        color: var(--text-color);		
-        font-size: 0.8rem;
+        color: #888;		
+        font-size: 0.75rem;
 		line-height: 1.5;
 		margin: 0;
 		text-wrap: pretty;

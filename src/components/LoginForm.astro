@@ -34,12 +34,14 @@
 
 <script>
   // Simple authentication - you can replace with your preferred method
-  const form = document.getElementById('loginForm');
+  const form = document.getElementById('loginForm') as HTMLFormElement | null;
   const errorMessage = document.getElementById('error-message');
   
-  form.addEventListener('submit', async (e) => {
+  if (!form) {
+    console.warn('[LoginForm] No se encontró #loginForm');
+  } else {
+    form.addEventListener('submit', async (e) => {
     e.preventDefault();
-    if (!form) return;
 
     const formData = new FormData(form);
     const username = formData.get('username');
@@ -81,6 +83,7 @@
       }
     }
   });
+  }
 </script>
 
 <style>

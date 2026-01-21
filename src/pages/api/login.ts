@@ -1,16 +1,16 @@
 import type { APIRoute } from 'astro';
 
 export const POST: APIRoute = async ({ request }) => {
-  let body = {};
+  let body: { username?: unknown; password?: unknown } = {};
   try {
-    body = await request.json();
+    body = (await request.json()) as { username?: unknown; password?: unknown };
   } catch {
     return new Response(JSON.stringify({ success: false, message: 'Cuerpo inválido' }), {
       status: 400,
       headers: { 'Content-Type':'application/json' },
     });
   }
-  const { username, password } = body || {};
+  const { username, password } = body;
   // Leer de variables de entorno
   const { ADMIN_USERNAME, ADMIN_PASSWORD } = import.meta.env;
 

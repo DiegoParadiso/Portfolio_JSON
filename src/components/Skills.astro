@@ -29,7 +29,12 @@ import {skills} from "../cv.json";
         color: var(--text-color);
         font-size: 0.8rem;
         padding: 0.2rem 0.6rem;
-        transition: background-color 0.3s, transform 0.2s;
+    }
+
+    /* Borde gris solo en modo claro */
+    :global([data-theme='light']) li {
+        border-color: #888;
+         border: 1px solid #e0e0e0;
 
     }
 

@@ -1,62 +1,363 @@
 ---
 const { text = "" } = Astro.props;
-const words = text.split(" ");
 ---
 
-<span class="animated-text">
-  {
-    words.map((word: string, i: number) => (
-      <span class="word">
-        {word.split("").map((letter: string, j: number) => (
-          <span class="letter">
-            {letter}
-          </span>
-        ))}
-      </span>
-    ))
-  }
+<span class="animated-text" data-text={text}>
+  {text}
 </span>
 
-<style is:global>
+<style>
   .animated-text {
     display: inline;
-    font-size: 0.8rem;
-  }
-  
-  .word {
-    display: inline-block;
-    margin-right: 0.35em;
-    cursor: default;
-    position: relative;
-  }
-  
-  .letter {
-    display: inline-block;
-    color: #777;
-    opacity: 0.9;
-    transition: opacity 0.25s ease;
     position: relative;
   }
 
-  .word:hover .letter {
-    color: #555;
-    opacity: 1;
+  /* Active ascii anim on text */
+  .animated-text.as {
+    cursor: pointer;
+    user-select: none;
   }
 
-  .word:hover .letter::after {
-    content: "";
-    position: absolute;
-    left: 0;
-    bottom: 0px;
-    height: 0.5px;
-    width: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    transform: scaleX(0);
-    transform-origin: left;
-    transition: transform 0.3s ease;
+  /* Disable text selection during ASCII animation */
+  .animated-text.as::selection {
+    background: transparent;
   }
 
-  .word:hover .letter:hover::after {
-    transform: scaleX(1);
+  /* hover state for text with ASCII animation */
+  .animated-text.as:hover {
+    position: relative;
+    cursor: pointer;
   }
 </style>
+
+<script is:inline>
+  // Prevent multiple initializations
+  if (typeof window !== 'undefined' && !window.__asciiShiftInitialized) {
+    window.__asciiShiftInitialized = true;
+    
+    // Constants for wave animation behavior
+    const WAVE_THRESH = 3;
+    const CHAR_MULT = 3;
+    const ANIM_STEP = 40;
+    const WAVE_BUF = 5;
+
+    /**
+     * ASCII ripple animation instance for an element
+     */
+    const createASCIIShift = (el, opts = {}) => {
+      // State variables
+      let origTxt = el.textContent;
+      let origChars = origTxt.split("");
+      let isAnim = false;
+      let cursorPos = 0;
+      let waves = [];
+      let animId = null;
+      let isHover = false;
+      let origW = null;
+
+      // options
+      const cfg = {
+        dur: 600,
+        chars: '.,·-─~+:;=*π""┐┌┘┴┬╗╔╝╚╬╠╣╩╦║░▒▓█▄▀▌▐■!?&#$@0123456789*',
+        preserveSpaces: true,
+        spread: 0.3,
+        ...opts
+      };
+
+      /**
+       * Updates cursor position based on mouse move
+       * Works correctly with multiline text using Range API
+       */
+      const updateCursorPos = (e) => {
+        const rect = el.getBoundingClientRect();
+        
+        // Use caretRangeFromPoint for accurate multiline positioning
+        if (document.caretRangeFromPoint) {
+          try {
+            const range = document.caretRangeFromPoint(e.clientX, e.clientY);
+            if (range) {
+              // Check if range is within our element or its children
+              let container = range.startContainer;
+              while (container && container !== el) {
+                container = container.parentNode;
+              }
+              
+              if (container === el || el.contains(range.startContainer)) {
+                // Calculate character position from start of element
+                const preRange = document.createRange();
+                preRange.selectNodeContents(el);
+                preRange.setEnd(range.startContainer, range.startOffset);
+                const pos = preRange.toString().length;
+                cursorPos = Math.max(0, Math.min(pos, origTxt.length - 1));
+                return;
+              }
+            }
+          } catch (err) {
+            // Fallback if caretRangeFromPoint fails
+          }
+        }
+        
+        // Fallback: use width-based calculation (less accurate for multiline)
+        const x = e.clientX - rect.left;
+        const len = origTxt.length;
+        const pos = Math.round((x / Math.max(rect.width, 1)) * len);
+        cursorPos = Math.max(0, Math.min(pos, len - 1));
+      };
+
+      /**
+       * Starts a new wave animation from current cursor pos
+       */
+      const startWave = () => {
+        waves.push({
+          startPos: cursorPos,
+          startTime: Date.now(),
+          id: Math.random()
+        });
+        if (!isAnim) start();
+      };
+
+      /**
+       * Clean up expired waves that have exceeded their duration
+       */
+      const cleanupWaves = (t) => {
+        waves = waves.filter((w) => t - w.startTime < cfg.dur);
+      };
+
+      /**
+       * Calculates wave fx for a character at given index
+       * Returns whether to animate and which character to show
+       */
+      const calcWaveEffect = (charIdx, t) => {
+        let shouldAnim = false;
+        let resultChar = origChars[charIdx];
+
+        for (const w of waves) {
+          const age = t - w.startTime;
+          const prog = Math.min(age / cfg.dur, 1);
+          const dist = Math.abs(charIdx - w.startPos);
+          
+          // Calculate max distance from wave start to furthest point in text
+          // This ensures the wave can reach both ends of the text
+          const distToStart = w.startPos;
+          const distToEnd = origChars.length - w.startPos - 1;
+          const maxDist = Math.max(distToStart, distToEnd);
+          
+          // Calculate radius: wave expands from start position
+          // Use maxDist to ensure full coverage, with buffer for smooth animation
+          const rad = (prog * (maxDist + WAVE_BUF)) / cfg.spread;
+
+          // Check if this character is within the wave radius
+          if (dist <= rad) {
+            shouldAnim = true;
+            const intens = Math.max(0, rad - dist);
+            
+            // Chars in the wave zone shift through character sequence
+            // Only animate characters close to the wave front for performance
+            if (intens <= WAVE_THRESH && intens > 0) {
+              const charIdx = (dist * CHAR_MULT + Math.floor(age / ANIM_STEP)) % cfg.chars.length;
+              resultChar = cfg.chars[charIdx];
+            }
+          }
+        }
+
+        return { shouldAnim, char: resultChar };
+      };
+
+      /**
+       * Generates scrambled text based on current waves
+       */
+      const genScrambledTxt = (t) =>
+        origChars
+          .map((char, i) => {
+            if (cfg.preserveSpaces && char === " ") return " ";
+            const res = calcWaveEffect(i, t);
+            return res.shouldAnim ? res.char : char;
+          })
+          .join("");
+
+      /**
+       * Stops the animation and resets to original text
+       */
+      const stop = () => {
+        el.textContent = origTxt;
+        el.classList.remove("as");
+        
+        // Reset dimensions to allow natural text flow
+        if (origW !== null) {
+          el.style.width = "";
+          el.style.minHeight = "";
+          origW = null;
+        }
+        isAnim = false;
+      };
+
+      /**
+       * Start the animation loop
+       */
+      const start = () => {
+        if (isAnim) return;
+        
+        // Preserve original dimensions to prevent layout shifts
+        // For multiline text, we need to preserve both width and min-height
+        if (origW === null) {
+          const rect = el.getBoundingClientRect();
+          origW = rect.width;
+          // Only set width if element has a defined width (not auto/inline)
+          const computedStyle = window.getComputedStyle(el);
+          if (computedStyle.display !== 'inline' || rect.width > 0) {
+            el.style.width = `${origW}px`;
+          }
+          // Preserve min-height for multiline text
+          if (rect.height > parseFloat(computedStyle.lineHeight)) {
+            el.style.minHeight = `${rect.height}px`;
+          }
+        }
+
+        isAnim = true;
+        el.classList.add("as");
+
+        const animate = () => {
+          const t = Date.now();
+          
+          // Clean up expired waves first
+          cleanupWaves(t);
+          
+          if (waves.length === 0) {
+            stop();
+            return;
+          }
+
+          // Generate scrambled text
+          el.textContent = genScrambledTxt(t);
+          animId = requestAnimationFrame(animate);
+        };
+
+        animId = requestAnimationFrame(animate);
+      };
+
+      /**
+       * Event handlers
+       */
+      const handleEnter = (e) => {
+        isHover = true;
+        updateCursorPos(e);
+        startWave();
+      };
+
+      const handleMove = (e) => {
+        if (!isHover) return;
+        const old = cursorPos;
+        updateCursorPos(e);
+        if (cursorPos !== old) startWave();
+      };
+
+      const handleLeave = () => {
+        isHover = false;
+      };
+
+      /**
+       * Initializes event listeners
+       */
+      const init = () => {
+        const events = [
+          ["mouseenter", handleEnter],
+          ["mousemove", handleMove],
+          ["mouseleave", handleLeave]
+        ];
+        
+        events.forEach(([evt, handler]) => el.addEventListener(evt, handler));
+      };
+
+      /**
+       * Resets animation to original state
+       */
+      const resetToOrig = () => {
+        waves = [];
+        if (animId) {
+          cancelAnimationFrame(animId);
+          animId = null;
+        }
+        
+        // Reset dimensions preservation
+        if (origW !== null) {
+          el.style.width = "";
+          el.style.minHeight = "";
+          origW = null;
+        }
+        stop();
+      };
+
+      /**
+       * Updates the text content
+       */
+      const updateTxt = (newTxt) => {
+        origTxt = newTxt;
+        origChars = newTxt.split("");
+        if (!isAnim) el.textContent = newTxt;
+      };
+
+      /**
+       * Destroys the instance and cleans up event listeners
+       */
+      const destroy = () => {
+        resetToOrig();
+        ["mouseenter", "mousemove", "mouseleave"].forEach((evt, i) =>
+          el.removeEventListener(evt, [handleEnter, handleMove, handleLeave][i])
+        );
+      };
+
+      // Initialize the instance
+      init();
+
+      // public API
+      return { updateTxt, resetToOrig, destroy };
+    };
+
+    /**
+     * Initialize animation for all animated-text elements on the page
+     */
+    const initASCIIShift = () => {
+      const elements = document.querySelectorAll(".animated-text:not([data-ascii-initialized])");
+      elements.forEach((el) => {
+        if (!el.textContent.trim()) return;
+        el.setAttribute('data-ascii-initialized', 'true');
+        // Adjust spread and duration based on text length for better coverage
+        const textLength = el.textContent.length;
+        
+        // Optimize parameters for different text lengths
+        // Longer texts need slower spread (smaller value) and longer duration
+        let spread, dur;
+        if (textLength > 180) {
+          // Very long texts (like About summary ~200 chars): 
+          // Use slower spread to ensure smooth coverage of entire text
+          spread = 0.25;
+          dur = 2000; // Fixed duration for consistency
+        } else if (textLength > 120) {
+          // Long texts (like some project descriptions):
+          spread = 0.35;
+          dur = 1500;
+        } else if (textLength > 80) {
+          // Medium texts:
+          spread = 0.5;
+          dur = 1200;
+        } else {
+          // Short texts (like labels, titles):
+          spread = 1;
+          dur = 1000;
+        }
+        
+        createASCIIShift(el, { dur: dur, spread: spread });
+      });
+    };
+
+    // Initialize when DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initASCIIShift);
+    } else {
+      initASCIIShift();
+    }
+
+    // Also initialize after a short delay to catch dynamically added elements
+    setTimeout(initASCIIShift, 100);
+  }
+</script>
